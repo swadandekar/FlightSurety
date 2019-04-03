@@ -73,11 +73,6 @@ contract FlightSuretyData {
         _;
     }
 
-    modifier requireAirlineFunded()
-    {
-        require(airlines[msg.sender].isFunded == true, "Caller Airline is not funded");
-        _;
-    }
 
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
@@ -121,7 +116,7 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount) //requireAirlineFunded
+    function registerAirline (address _airlineAddress, uint256 validVotesCount) 
                             external returns (bool)
     {
         

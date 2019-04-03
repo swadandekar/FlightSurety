@@ -64,6 +64,19 @@ contract FlightSuretyApp {
         _;
     }
 
+    modifier requireAirlineFunded()
+    {
+        require(flightSuretyData.isAirline(msg.sender) == true, "Caller Airline is not funded");
+        _;
+    }
+
+        // check if requester airline exists
+    modifier verifyOtherAirlinesApproval (uint256 validVotesCount) {
+        require( airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
+        _;
+    }
+
+
     /********************************************************************************************/
     /*                                       CONSTRUCTOR                                        */
     /********************************************************************************************/
@@ -102,7 +115,7 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount) 
+    function registerAirline (address _airlineAddress, uint256 validVotesCount)  requireAirlineFunded
                             external payable 
                             returns(bool)
                             
@@ -343,5 +356,6 @@ function registerAirline(address _airlineAddress, uint256 validVotesCount)
                             external  payable                 
                             returns(bool);
 
+function isAirline(address _airlineAddress) external returns(bool);
 
 }
