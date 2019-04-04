@@ -76,14 +76,23 @@ contract('Flight Surety Tests', async (accounts) => {
     // ARRANGE
     let newAirline = accounts[2];    
 
+    let amount = 10; 
+    amount = web3.utils.toWei(amount.toString(), 'ether');
+
+
+
     // ACT
     try {
-        await config.flightSuretyApp.registerAirline(newAirline, 1, {from: config.firstAirline});
+       await config.flightSuretyApp.registerAirline(newAirline, 1, {from: config.firstAirline});
+       await config.flightSuretyApp.fundAirline(newAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
+       
+       
     }
     catch(e) {
 
     }
-    let result = await config.flightSuretyData.isAirline.call(newAirline); 
+    
+     let result = await config.flightSuretyData.isAirline.call(newAirline); 
 
     // ASSERT
     assert.equal(result, true, "Airline should be able to register another airline if it has provided funding");
@@ -110,6 +119,72 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // ASSERT
     assert.equal(result, false, "Airline should not be able to register another airline if it hasn't provided funding");
+
+  });
+
+  it('Test 7 (airline) cannot register an Airline using registerAirline() if do not have 50% airlines votoes ', async () => {
+    
+    // ARRANGE
+    let thirdAirline = accounts[3];   
+    let fourthAirline = accounts[4]; 
+    let fifthAirline = accounts[5];
+    let amount = 10; 
+    amount = web3.utils.toWei(amount.toString(), 'ether');
+    
+    let cnt = await config.flightSuretyData.getAirlineCount.call(); 
+    console.log("airline count 7 before  "+ cnt);
+
+    // // ACT
+    try {
+        await config.flightSuretyApp.registerAirline( thirdAirline, 0, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(thirdAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
+
+        await config.flightSuretyApp.registerAirline( fourthAirline, 0, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(fourthAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
+
+        await config.flightSuretyApp.registerAirline( fifthAirline, 1, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(fifthAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
+    }
+    catch(e) {
+
+    }
+
+
+    let result = await config.flightSuretyData.isAirline.call(fifthAirline); 
+
+    let cnt2 = await config.flightSuretyData.getAirlineCount.call(); 
+    console.log("airline count 7 after "+ cnt2);
+
+    let resultApproval = await config.flightSuretyData.checkAirlinesApproval.call(1);
+    console.log("check approval result: " + resultApproval);
+
+    // ASSERT
+    assert.equal(result, false, "Airline should not be able to register when do not have enough votes");
+
+  });
+
+  it('Test 8 (airline) can be registerd an Airline using registerAirline() if has 50% airlines votoes ', async () => {
+    
+    // ARRANGE
+ 
+    let sixAirline = accounts[6];
+    let amount = 10; 
+    amount = web3.utils.toWei(amount.toString(), 'ether');
+
+    // // ACT
+    try {
+
+        await config.flightSuretyApp.registerAirline( sixAirline, 3, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(sixAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
+    }
+    catch(e) {
+
+    }
+    
+    let result = await config.flightSuretyData.isAirline.call(sixAirline); 
+
+    // ASSERT
+    assert.equal(result, true, "Airline should be able to registered when has enough votes");
 
   });
 });

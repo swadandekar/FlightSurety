@@ -73,6 +73,11 @@ contract FlightSuretyData {
         _;
     }
 
+    modifier verifyOtherAirlinesApproval (uint256 validVotesCount) {
+        require( airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
+        _;
+    }
+
 
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
@@ -116,16 +121,21 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount) 
+    function registerAirline (address _airlineAddress, uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
                             external returns (bool)
     {
         
         airlines[_airlineAddress] = Airline({
                                         isRegistered: true,
-                                        isFunded: true
+                                        isFunded: false
                                     });
         airlineCount = airlineCount +1;
         return true;
+    }
+
+    function fundAirline( address _airlineAddress) payable external returns (bool){
+         airlines[_airlineAddress].isFunded = true;
+         return true;
     }
 
     function isAirline(address _airlineAddress) external returns(bool){
@@ -138,6 +148,11 @@ contract FlightSuretyData {
         return airlineCount;
     }
 
+    function checkAirlinesApproval(uint256 validVotesCount ) external returns (bool) {       
+
+        bool flag = airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50 ; 
+        return flag;
+    }
 
    /*
     * @dev Buy insurance for a flight

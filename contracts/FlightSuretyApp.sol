@@ -70,11 +70,9 @@ contract FlightSuretyApp {
         _;
     }
 
-        // check if requester airline exists
-    modifier verifyOtherAirlinesApproval (uint256 validVotesCount) {
-        require( airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
-        _;
-    }
+    
+
+
 
 
     /********************************************************************************************/
@@ -124,7 +122,13 @@ contract FlightSuretyApp {
         return (true);
     }
 
+    function fundAirline(address _airlineAddress) external payable returns (bool){
+        flightSuretyData.fundAirline(_airlineAddress);
+        return (true);
+    }
 
+
+ 
    /**
     * @dev Register a future flight for insuring.
     *
@@ -357,5 +361,9 @@ function registerAirline(address _airlineAddress, uint256 validVotesCount)
                             returns(bool);
 
 function isAirline(address _airlineAddress) external returns(bool);
+
+function fundAirline(address _airlineAddress) external payable returns (bool);
+
+function getAirlineCount() external returns (uint256);
 
 }
