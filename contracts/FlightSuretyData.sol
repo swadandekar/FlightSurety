@@ -74,7 +74,7 @@ contract FlightSuretyData {
     }
 
     modifier verifyOtherAirlinesApproval (uint256 validVotesCount) {
-        require( airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
+        require( airlineCount < 4 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
         _;
     }
 
@@ -134,7 +134,9 @@ contract FlightSuretyData {
     }
 
     function fundAirline( address _airlineAddress) payable external returns (bool){
-         airlines[_airlineAddress].isFunded = true;
+        if(airlines[_airlineAddress].isRegistered== true){
+            airlines[_airlineAddress].isFunded = true;
+        }
          return true;
     }
 
@@ -150,7 +152,7 @@ contract FlightSuretyData {
 
     function checkAirlinesApproval(uint256 validVotesCount ) external returns (bool) {       
 
-        bool flag = airlineCount < 5 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50 ; 
+        bool flag = airlineCount < 4 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50 ; 
         return flag;
     }
 
