@@ -104,10 +104,13 @@ contract('Flight Surety Tests', async (accounts) => {
     // ARRANGE
     let thirdAirline = accounts[3];   
     let fourthAirline = accounts[4]; 
+    let amount = 5; 
+    amount = web3.utils.toWei(amount.toString(), 'ether');
 
     // // ACT
     try {
         await config.flightSuretyApp.registerAirline( thirdAirline, 0, {from: fourthAirline});
+        await config.flightSuretyApp.fundAirline(thirdAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
     }
     catch(e) {
 
@@ -116,6 +119,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // let cnt = await config.flightSuretyData.getAirlineCount.call(); 
     // console.log("airline count "+ cnt);
+    console.log("amount "+ amount);
 
     // ASSERT
     assert.equal(result, false, "Airline should not be able to register another airline if it hasn't provided funding");
@@ -170,6 +174,7 @@ contract('Flight Surety Tests', async (accounts) => {
     let sixAirline = accounts[6];
     let amount = 10; 
     amount = web3.utils.toWei(amount.toString(), 'ether');
+    //amount = web3.toBigNumber(web3.utils.toWei(amount.toString(), 'ether'));
 
     // // ACT
     try {

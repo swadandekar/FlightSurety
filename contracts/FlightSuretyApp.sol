@@ -70,7 +70,11 @@ contract FlightSuretyApp {
         _;
     }
 
-    
+    modifier require10Ether()
+    {
+        require(msg.value >= 10 ether, "Caller should fund 10 ethers");
+        _;
+    }
 
 
 
@@ -113,7 +117,7 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount)  requireAirlineFunded
+    function registerAirline (address _airlineAddress, uint256 validVotesCount)  requireAirlineFunded 
                             external payable 
                             returns(bool)
                             
@@ -122,7 +126,9 @@ contract FlightSuretyApp {
         return (true);
     }
 
-    function fundAirline(address _airlineAddress) external payable returns (bool){
+    function fundAirline(address _airlineAddress) require10Ether external payable returns (bool){
+
+        address(flightSuretyData).transfer(msg.value);
         flightSuretyData.fundAirline(_airlineAddress);
         return (true);
     }
