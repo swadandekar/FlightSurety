@@ -27,15 +27,8 @@ contract FlightSuretyApp {
     address private contractOwner;          // Account used to deploy contract
     FlightSuretyData flightSuretyData;
 
-    struct Flight {
-        bool isRegistered;
-        uint8 statusCode;
-        uint256 updatedTimestamp;        
-        address airline;
-    }
-    mapping(bytes32 => Flight) private flights;
 
- 
+
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
@@ -76,7 +69,11 @@ contract FlightSuretyApp {
         _;
     }
 
-
+    modifier requireNotMoreThanOneEther()
+    {
+        require(msg.value <= 1 ether, "Passengers should not pay more than one ether");
+        _;
+    }
 
 
     /********************************************************************************************/
@@ -141,29 +138,36 @@ contract FlightSuretyApp {
     */  
     function registerFlight
                                 (
+                                    address airline,
+                                    string flight,
+                                    uint256 timestamp,
+                                    uint8 statusCode
                                 )
-                                external
-                                pure
+                                external                                
     {
-
+        flightSuretyData.registerFlight(airline, flight, timestamp, statusCode );
     }
     
    /**
     * @dev Called after oracle has updated flight status
     *
     */  
-    function processFlightStatus
-                                (
-                                    address airline,
-                                    string memory flight,
-                                    uint256 timestamp,
-                                    uint8 statusCode
-                                )
-                                internal
-                                pure
+    function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external
     {
+        
+        flightSuretyData.processFlightStatus(airline,flight,timestamp, statusCode);
+   
     }
 
+    function buy(address insuree, bytes32 flightKey)external payable{
+        address(flightSuretyData).transfer(msg.value);
+        flightSuretyData.buy(insuree, flightKey);
+    }
+
+    function pay(address insuree ) external payable{
+         
+         flightSuretyData.pay(insuree);
+    }
 
     // Generate a request for oracles to fetch flight information
     function fetchFlightStatus
@@ -294,7 +298,7 @@ contract FlightSuretyApp {
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
             // Handle flight status as appropriate
-            processFlightStatus(airline, flight, timestamp, statusCode);
+            this.processFlightStatus(airline, flight, timestamp, statusCode);
         }
     }
 
@@ -371,5 +375,14 @@ function isAirline(address _airlineAddress) external returns(bool);
 function fundAirline(address _airlineAddress) external payable returns (bool);
 
 function getAirlineCount() external returns (uint256);
+
+function registerFlight (address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
+
+function buy(address insuree, bytes32 flightKey)external payable;
+
+function pay(address insuree ) external payable ;
+
+function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
+
 
 }

@@ -83,7 +83,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // ACT
     try {
-       await config.flightSuretyApp.registerAirline(newAirline, 1, {from: config.firstAirline});
+       await config.flightSuretyApp.registerAirline(newAirline, "AC02",1, {from: config.firstAirline});
        await config.flightSuretyApp.fundAirline(newAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
        
        
@@ -109,7 +109,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // // ACT
     try {
-        await config.flightSuretyApp.registerAirline( thirdAirline, 0, {from: fourthAirline});
+        await config.flightSuretyApp.registerAirline( thirdAirline, "AC03", 0, {from: fourthAirline});
         await config.flightSuretyApp.fundAirline(thirdAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
     }
     catch(e) {
@@ -140,13 +140,13 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // // ACT
     try {
-        await config.flightSuretyApp.registerAirline( thirdAirline, 0, {from: config.firstAirline});
+        await config.flightSuretyApp.registerAirline( thirdAirline, "AC03", 0, {from: config.firstAirline});
         await config.flightSuretyApp.fundAirline(thirdAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
 
-        await config.flightSuretyApp.registerAirline( fourthAirline, 0, {from: config.firstAirline});
+        await config.flightSuretyApp.registerAirline( fourthAirline, "AC04", 0, {from: config.firstAirline});
         await config.flightSuretyApp.fundAirline(fourthAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
 
-        await config.flightSuretyApp.registerAirline( fifthAirline, 1, {from: config.firstAirline});
+        await config.flightSuretyApp.registerAirline( fifthAirline, "AC05", 1, {from: config.firstAirline});
         await config.flightSuretyApp.fundAirline(fifthAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
     }
     catch(e) {
@@ -179,7 +179,7 @@ contract('Flight Surety Tests', async (accounts) => {
     // // ACT
     try {
 
-        await config.flightSuretyApp.registerAirline( sixAirline, 3, {from: config.firstAirline});
+        await config.flightSuretyApp.registerAirline( sixAirline, "AC06",3, {from: config.firstAirline});
         await config.flightSuretyApp.fundAirline(sixAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
     }
     catch(e) {

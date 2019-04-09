@@ -13,15 +13,32 @@ contract FlightSuretyData {
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
 
     uint256 airlineCount;
+    uint256 flightCount;
     
+
+    mapping(bytes32 => Flight) private flights;
+    mapping(address => Airline) private airlines;
+    FlightInsurance[] private flightInsurance;    
+    mapping(address => uint256) private customerCredits;
+
     struct Airline{
         bool isRegistered;
         bool isFunded;
+        string airlineCode;
     }
-
-    mapping(address => Airline) private airlines;
-    
-
+    struct Flight {
+        bool isRegistered;
+        uint8 statusCode;
+        uint256 updatedTimestamp;        
+        address airline;
+        string flightCode;
+    } 
+    struct FlightInsurance{
+        address insuree;
+        bytes32 flightKey;
+        uint256 insuranceAmount;
+    }
+ 
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
 
@@ -40,10 +57,12 @@ contract FlightSuretyData {
 
         airlines[firstAirlineAddress] = Airline({
                                         isRegistered: true,
-                                        isFunded: true
+                                        isFunded: true,
+                                        airlineCode: "AC01"
                                     });
 
         airlineCount = 1;
+        flightCount= 0;
     }
 
     /********************************************************************************************/
@@ -121,13 +140,14 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
+    function registerAirline (address _airlineAddress, string _airlineCode, uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
                             external returns (bool)
     {
         
         airlines[_airlineAddress] = Airline({
                                         isRegistered: true,
-                                        isFunded: false
+                                        isFunded: false,
+                                        airlineCode: _airlineCode
                                     });
         airlineCount = airlineCount +1;
         return true;
@@ -140,44 +160,61 @@ contract FlightSuretyData {
          return true;
     }
 
-    function isAirline(address _airlineAddress) external returns(bool){
+    function isAirline(address _airlineAddress) external view returns(bool){
 
         bool fundStatus = airlines[_airlineAddress].isFunded ;
         return fundStatus;
     }
 
-    function getAirlineCount() external returns (uint256){
+    function getAirlineCount() external view returns (uint256){
         return airlineCount;
     }
 
-    function checkAirlinesApproval(uint256 validVotesCount ) external returns (bool) {       
+    function checkAirlinesApproval(uint256 validVotesCount ) external view returns (bool) {       
 
         bool flag = airlineCount < 4 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50 ; 
         return flag;
     }
 
+    function registerFlight( address airline, string flight, uint256 timestamp, uint8 statusCode) external                                
+    {
+        bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
+
+        flights[_flightKey] = Flight({
+                                        isRegistered: true,
+                                        statusCode: statusCode,
+                                        updatedTimestamp: timestamp,       
+                                        airline: airline,
+                                        flightCode: flight
+                                    });   
+        flightCount = flightCount +1;
+    }
+
+    function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external
+    {
+        bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
+       
+        flights[_flightKey].statusCode = statusCode;
+    }
    /*
     * @dev Buy insurance for a flight
     *
     */   
-    function buy
-                            (                             
-                            )
-                            external
-                            payable
+    function buy(address insuree, bytes32 flightKey)external payable
     {
+        //uint256 insuranceAmount;    FlightInsurance
+        FlightInsurance memory fi = FlightInsurance(insuree, flightKey, msg.value);
+        flightInsurance.push(fi);
 
     }
 
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees
-                                (
-                                )
-                                external
-                                pure
+    function creditInsurees ( address insuree)external payable
     {
+        //mapping(address => uint256) private customerCredits;
+        customerCredits[insuree] = msg.value;
     }
     
 
@@ -185,12 +222,12 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay
-                            (
-                            )
-                            external
-                            pure
+    function pay(address insuree ) external payable 
     {
+        //only data contract has money
+       insuree.transfer(msg.value);
+      uint256 creditBefore =  customerCredits[insuree] ;
+      customerCredits[insuree] = creditBefore - msg.value;
     }
 
    /**
