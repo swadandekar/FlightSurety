@@ -140,7 +140,7 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address _airlineAddress, string _airlineCode, uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
+    function registerAirline (address _airlineAddress, string _airlineCode,  uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
                             external returns (bool)
     {
         

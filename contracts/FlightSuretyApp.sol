@@ -114,12 +114,12 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline (address _airlineAddress, uint256 validVotesCount)  requireAirlineFunded 
+    function registerAirline (address _airlineAddress, string _airlineCode,uint256 validVotesCount)  requireAirlineFunded 
                             external payable 
                             returns(bool)
                             
     {
-        flightSuretyData.registerAirline(_airlineAddress,  validVotesCount);
+        flightSuretyData.registerAirline(_airlineAddress,  _airlineCode,  validVotesCount);
         return (true);
     }
 
@@ -366,7 +366,7 @@ contract FlightSuretyApp {
 
 contract FlightSuretyData{
 
-function registerAirline(address _airlineAddress, uint256 validVotesCount) 
+function registerAirline(address _airlineAddress, string _airlineCode,uint256 validVotesCount) 
                             external  payable                 
                             returns(bool);
 
