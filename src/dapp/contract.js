@@ -37,10 +37,25 @@ export default class Contract {
 
     isOperational(callback) {
        let self = this;
+       console.log("I am the caller "+ self.owner );
        self.flightSuretyApp.methods
             .isOperational()
             .call({ from: self.owner}, callback);
     }
+
+    
+    registerOracle(callback) {
+        let self = this;
+        let amount = 1; 
+        amount = web3.toWei(amount.toString(), 'ether');
+        console.log("amount"+amount);
+        console.log("register Oracle called "+ self.owner );
+        self.flightSuretyApp.methods
+             .registerOracle()
+             .send({ from: self.owner , value: amount, gasPrice: 0}, (error, result) => {
+                callback(error);
+            });
+     }
 
     fetchFlightStatus(flight, callback) {
         let self = this;

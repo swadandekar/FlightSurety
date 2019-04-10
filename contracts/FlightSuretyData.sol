@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -176,7 +176,7 @@ contract FlightSuretyData {
         return flag;
     }
 
-    function registerFlight( address airline, string flight, uint256 timestamp, uint8 statusCode) external                                
+    function registerFlight( address airline, string  flight, uint256 timestamp, uint8 statusCode) external                                
     {
         bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
 
@@ -190,7 +190,7 @@ contract FlightSuretyData {
         flightCount = flightCount +1;
     }
 
-    function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external
+    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) external
     {
         bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
        
@@ -225,7 +225,7 @@ contract FlightSuretyData {
     function pay(address insuree ) external payable 
     {
         //only data contract has money
-       insuree.transfer(msg.value);
+      insuree.transfer(msg.value);
       uint256 creditBefore =  customerCredits[insuree] ;
       customerCredits[insuree] = creditBefore - msg.value;
     }

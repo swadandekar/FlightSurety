@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.24;
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
@@ -114,7 +114,7 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline (address _airlineAddress, string _airlineCode,uint256 validVotesCount)  requireAirlineFunded 
+    function registerAirline (address _airlineAddress, string  _airlineCode, uint256 validVotesCount)  requireAirlineFunded 
                             external payable 
                             returns(bool)
                             
@@ -139,7 +139,7 @@ contract FlightSuretyApp {
     function registerFlight
                                 (
                                     address airline,
-                                    string flight,
+                                    string   flight,
                                     uint256 timestamp,
                                     uint8 statusCode
                                 )
@@ -152,7 +152,7 @@ contract FlightSuretyApp {
     * @dev Called after oracle has updated flight status
     *
     */  
-    function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external
+    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) external
     {
         
         flightSuretyData.processFlightStatus(airline,flight,timestamp, statusCode);
@@ -173,7 +173,7 @@ contract FlightSuretyApp {
     function fetchFlightStatus
                         (
                             address airline,
-                            string flight,
+                            string  flight,
                             uint256 timestamp                            
                         )
                         external
@@ -276,7 +276,7 @@ contract FlightSuretyApp {
                         (
                             uint8 index,
                             address airline,
-                            string flight,
+                            string  flight,
                             uint256 timestamp,
                             uint8 statusCode
                         )
@@ -306,7 +306,7 @@ contract FlightSuretyApp {
     function getFlightKey
                         (
                             address airline,
-                            string flight,
+                            string  flight,
                             uint256 timestamp
                         )
                         pure

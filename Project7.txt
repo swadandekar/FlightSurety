@@ -1,2 +1,91 @@
 npm run dapp
 npm run server
+
+truffle(develop)>
+
+node v8.11.3
+Ganache CLI v6.1.8 (ganache-core: 2.2.1)
+Ganache v1.2.2
+
+
+0x954419cDa34d3DD1A36c071DC8EAF35D1F160E37
+
+0x954419cDa34d3DD1A36c071DC8EAF35D1F160E37
+
+PS C:\Swati\BlockChain\Project7> truffle migrate --reset
+
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+
+Starting migrations...
+======================
+> Network name:    'development'
+> Network id:      5777
+> Block gas limit: 0x6691b7
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0xbd7f9455d49bbf7a05293d625f2ee37d9f806b1e3b663e3537a190faaa018f78
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x7A7c666C85ecC4009C4a49e7bb0Dd8139A4E35ba
+   > account:             0x99f5bFB58e883635b8BB05a2b92191057499bfAD
+   > balance:             99.99445076
+   > gas used:            277462
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00554924 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.00554924 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'FlightSuretyData'
+   ----------------------------
+   > transaction hash:    0xb15d0213c1bfa41510b5adde9b7442c3f81bd40eae91110e839d1ef796ecd27b
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xB30a38610a29e3Ca79321Ba4a05fA1FC88db6887
+   > account:             0x99f5bFB58e883635b8BB05a2b92191057499bfAD
+   > balance:             99.96942308
+   > gas used:            1209376
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02418752 ETH
+
+
+   Deploying 'FlightSuretyApp'
+   ---------------------------
+   > transaction hash:    0x175806b9e827af5aa275c01356edafd11d42633c18f9eeaf1b11c934307db98e
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x6102C5D35C371EDc5ED0F88Ff581EEFD8b85166b
+   > account:             0x99f5bFB58e883635b8BB05a2b92191057499bfAD
+   > balance:             99.9277982
+   > gas used:            2081244
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04162488 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.0658124 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.07136164 ETH
+
+PS C:\Swati\BlockChain\Project7>
