@@ -14,14 +14,16 @@ export default class Contract {
         this.owner = null;
         this.airlines = [];
         this.passengers = [];
+        this.firstAirline = null;
+      
     }
 
     initialize(callback) {
         this.web3.eth.getAccounts((error, accts) => {
            console.log(accts);
             this.owner = accts[0];
-
-            let counter = 1;
+            this.firstAirline = accts[1];
+            let counter = 2;
             
             while(this.airlines.length < 5) {
                 this.airlines.push(accts[counter++]);
@@ -30,6 +32,8 @@ export default class Contract {
             while(this.passengers.length < 5) {
                 this.passengers.push(accts[counter++]);
             }
+
+            //this.fundAirline("Sprint",callback);
 
             callback();
         });
@@ -43,29 +47,156 @@ export default class Contract {
             .call({ from: self.owner}, callback);
     }
 
-    
-    registerOracle(callback) {
+    isAirline(airline, callback) {
         let self = this;
-        let amount = 1; 
-        amount = web3.toWei(amount.toString(), 'ether');
-        console.log("amount"+amount);
-        console.log("register Oracle called "+ self.owner );
+        console.log("I am the caller on isAirline"+ self.owner );
         self.flightSuretyApp.methods
-             .registerOracle()
-             .send({ from: self.owner , value: amount, gasPrice: 0}, (error, result) => {
-                callback(error);
-            });
+             .isAirline(airline)
+             .call({ from: self.owner}, callback);
      }
+
 
     fetchFlightStatus(flight, callback) {
         let self = this;
+        let airlineAddress;
+        if(flight == "AC01")
+        {    
+            airlineAddress = self.airlines[0];
+        }
+        else{
+            
+            airlineAddress = self.airlines[1];
+        }
         let payload = {
-            airline: self.airlines[0],
+            airline: airlineAddress,
             flight: flight,
-            timestamp: Math.floor(Date.now() / 1000)
+            timestamp: 1549432800
         } 
         self.flightSuretyApp.methods
             .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
+            .send({ from: self.owner}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    registerAirline(airlineCode, callback) {
+        let self = this;
+        let airlineAddress;
+        if(airlineCode == "airCanada")
+        {
+            airlineAddress =  self.airlines[0];
+        }
+        else{
+            airlineAddress =  self.airlines[1];
+        }
+        let payload = {
+            airline: airlineAddress,
+            airlineCode: airlineCode,
+            validVotesCount: 0
+        } 
+        self.flightSuretyApp.methods
+            .registerAirline(payload.airline, payload.airlineCode, payload.validVotesCount)
+            .send({ from: this.firstAirline}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    fundAirline(airlineCode, callback) {
+        let self = this;
+        let airlineAddress;
+        let amount = 10; 
+        amount = web3.toWei(amount.toString(), 'ether');
+        if(airlineCode == "airCanada")
+        {
+            airlineAddress =  self.airlines[0];
+        }
+        else{
+            airlineAddress =  self.airlines[1];
+        }
+        let payload = {
+            airline: airlineAddress
+        } 
+        self.flightSuretyApp.methods
+            .fundAirline(payload.airline)
+            .send({ from: this.firstAirline,value: amount, gasPrice: 0}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    registerFlight(flightCode, callback) {
+        let self = this;
+        let airlineAddress;
+        if(flightCode == "AC01")
+        {    
+            airlineAddress = self.airlines[0];
+        }
+        else{
+            
+            airlineAddress = self.airlines[1];
+        }
+        let payload = {
+            airline: airlineAddress,
+            flight: flightCode,
+            timestamp: Date.now(),// 1549432800,
+            StatusCode: 0
+        } 
+        let timestamp =Date.now();
+        //await config.flightSuretyApp.registerFlight( airline,"US01", timestamp,10, {from: config.firstAirline});
+        console.log("payload " +payload.airline + ' ' + payload.flight +' ' + payload.StatusCode);
+        console.log(self.airlines[0]);
+        self.flightSuretyApp.methods
+           // .registerFlight(payload.airline, payload.flight, payload.timestamp, payload.StatusCode)
+           .registerFlight(this.firstAirline, "US01", timestamp, 10)
+            .send({ from: self.owner}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    purchaseFlightInsurance(flight, callback) {
+        let self = this;
+        let airlineAddress;
+        let amount = 1; 
+        amount = web3.toWei(amount.toString(), 'ether');
+        if(flightCode == "AC01")
+        {    
+            airlineAddress = self.airlines[0];
+        }
+        else{
+            
+            airlineAddress = self.airlines[1];
+        }
+        let payload = {
+            insuree: self.passengers[0],
+            airline: airlineAddress,
+            flight: flight,
+            timestamp: 1549432800
+        } 
+        self.flightSuretyApp.methods
+            .buy(payload.insuree, payload.airline, payload.flight, payload.timestamp)
+            .send({ from: self.owner,value: amount, gasPrice: 0}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    withdrawCredits(callback) {
+        let self = this;
+        let payload = {
+            insuree: self.passengers[0]
+        }
+        self.flightSuretyApp.methods
+            .pay(payload.insuree)
+            .send({ from: self.owner}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    showCredits(callback) {
+        let self = this;
+        let payload = {
+            insuree: self.passengers[0]
+        }
+        self.flightSuretyApp.methods
+            .getCredits(payload.insuree)
             .send({ from: self.owner}, (error, result) => {
                 callback(error, payload);
             });

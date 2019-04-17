@@ -175,7 +175,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // // ACT
     try {
-//"AC06",
+    //"AC06",
         await config.flightSuretyApp.registerAirline( sixAirline,"AC06", 3, {from: config.firstAirline});
         await config.flightSuretyApp.fundAirline(sixAirline,{from: config.firstAirline, value: amount, gasPrice: 0});
     }
@@ -187,6 +187,32 @@ contract('Flight Surety Tests', async (accounts) => {
 
     // ASSERT
     assert.equal(result, true, "Airline should be able to registered when has enough votes");
+
+  });
+
+  
+  it('Test 9 (flight) can be registerd using registerFlight() ', async () => {
+    
+    // ARRANGE
+ 
+    let airline = accounts[2];
+    let amount = 10; 
+    amount = web3.utils.toWei(amount.toString(), 'ether');
+    //amount = web3.toBigNumber(web3.utils.toWei(amount.toString(), 'ether'));
+    let timestamp =Date.now();
+    // // ACT
+    try {
+    //"AC06",
+        await config.flightSuretyApp.registerFlight( airline,"US01", timestamp,10, {from: config.firstAirline});
+     }
+    catch(e) {
+
+    }
+    
+    let result = await config.flightSuretyData.isFlight.call(airline,"US01",timestamp); 
+
+    // ASSERT
+    assert.equal(result, true, "Floght should be able to registered");
 
   });
 });

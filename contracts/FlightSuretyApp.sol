@@ -75,6 +75,12 @@ contract FlightSuretyApp {
         _;
     }
 
+    modifier requireInsuranceNotBought(address insuree , address airline, string  flight, uint256 timestamp)
+    {
+        require(flightSuretyData.getPassengerInsuredAmount(insuree, airline, flight, timestamp) <= 0, "Passenger already bought the insurance");
+        _;
+    }
+
 
     /********************************************************************************************/
     /*                                       CONSTRUCTOR                                        */
@@ -131,6 +137,11 @@ contract FlightSuretyApp {
     }
 
 
+    function isAirline(address _airlineAddress) external  returns(bool){
+        bool airlineStatus = flightSuretyData.isAirline(_airlineAddress);
+        return airlineStatus;
+    }
+
  
    /**
     * @dev Register a future flight for insuring.
@@ -159,14 +170,24 @@ contract FlightSuretyApp {
    
     }
 
-    function buy(address insuree, bytes32 flightKey)external payable{
+    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireNotMoreThanOneEther requireInsuranceNotBought(insuree, airline, flight, timestamp) external payable{
+       
         address(flightSuretyData).transfer(msg.value);
-        flightSuretyData.buy(insuree, flightKey);
+        flightSuretyData.buy(insuree, airline, flight, timestamp);
     }
 
-    function pay(address insuree ) external payable{
+    function pay(address insuree) external payable{
          
          flightSuretyData.pay(insuree);
+    }
+    
+    function getCredits(address insuree) external view returns(uint256){
+
+        return flightSuretyData.getCredits(insuree);
+    }
+
+    function creditInsurees( address insuree, address airline, string  flight, uint256 timestamp)external {
+        flightSuretyData.creditInsurees(insuree, airline, flight, timestamp);
     }
 
     // Generate a request for oracles to fetch flight information
@@ -378,11 +399,17 @@ function getAirlineCount() external returns (uint256);
 
 function registerFlight (address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
 
-function buy(address insuree, bytes32 flightKey)external payable;
+function buy(address insuree , address airline, string  flight, uint256 timestamp)external payable;
 
-function pay(address insuree ) external payable ;
+function pay(address insuree) external payable ;
 
 function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
 
+function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external view returns (uint256);
+
+function getCredits(address insuree) external view returns(uint256);
+
+function creditInsurees( address insuree, address airline, string  flight, uint256 timestamp)external ;
+ 
 
 }

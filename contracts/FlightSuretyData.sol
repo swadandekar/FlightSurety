@@ -18,9 +18,11 @@ contract FlightSuretyData {
 
     mapping(bytes32 => Flight) private flights;
     mapping(address => Airline) private airlines;
-    FlightInsurance[] private flightInsurance;    
+   // FlightInsurance[] private flightInsurance;    
+    //mapping(address => uint256) private customerCredits;
+    mapping(bytes32 => uint256) private customerFlightCredits;
     mapping(address => uint256) private customerCredits;
-
+    mapping(bytes32 => uint256) private flightInsurance;
     struct Airline{
         bool isRegistered;
         bool isFunded;
@@ -38,10 +40,15 @@ contract FlightSuretyData {
         bytes32 flightKey;
         uint256 insuranceAmount;
     }
- 
+
+
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
+    event CreditInsured (address insuree, address airline, string  flight, uint256 timestamp, uint256 amount);
 
+    event AirlineRegistered (address airlineAddress, bool isRegistered, bool isFunded, string airlineCode );
+ 
+    event FlightRegistered (address airline, string flightCode, uint256 timestamp );
 
     /**
     * @dev Constructor
@@ -58,7 +65,7 @@ contract FlightSuretyData {
         airlines[firstAirlineAddress] = Airline({
                                         isRegistered: true,
                                         isFunded: true,
-                                        airlineCode: "AC01"
+                                        airlineCode: "Sprint"
                                     });
 
         airlineCount = 1;
@@ -140,16 +147,19 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address _airlineAddress, string _airlineCode,  uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
+    function registerAirline (address airlineAddress, string airlineCode,  uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
                             external returns (bool)
     {
         
-        airlines[_airlineAddress] = Airline({
+        airlines[airlineAddress] = Airline({
                                         isRegistered: true,
                                         isFunded: false,
-                                        airlineCode: _airlineCode
+                                        airlineCode: airlineCode
                                     });
         airlineCount = airlineCount +1;
+        
+        emit AirlineRegistered (airlineAddress,airlines[airlineAddress].isRegistered, airlines[airlineAddress].isFunded, airlines[airlineAddress].airlineCode );
+
         return true;
     }
 
@@ -188,6 +198,14 @@ contract FlightSuretyData {
                                         flightCode: flight
                                     });   
         flightCount = flightCount +1;
+
+        emit FlightRegistered (flights[_flightKey].airline, flights[_flightKey].flightCode, flights[_flightKey].updatedTimestamp );
+    }
+    
+    function isFlight(address _airlineAddress, string flight , uint256 timestamp) external view returns(bool){
+
+        bytes32  _flightKey = getFlightKey( _airlineAddress, flight, timestamp );
+        return flights[_flightKey].isRegistered;
     }
 
     function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) external
@@ -196,25 +214,40 @@ contract FlightSuretyData {
        
         flights[_flightKey].statusCode = statusCode;
     }
+
+    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external view returns (uint256){
+        bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
+        return flightInsurance[_passengerflightKey] ;
+    }
+
    /*
     * @dev Buy insurance for a flight
     *
     */   
-    function buy(address insuree, bytes32 flightKey)external payable
+    function buy(address insuree , address airline, string  flight, uint256 timestamp)external payable
     {
-        //uint256 insuranceAmount;    FlightInsurance
-        FlightInsurance memory fi = FlightInsurance(insuree, flightKey, msg.value);
-        flightInsurance.push(fi);
-
+        bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
+        flightInsurance[_passengerflightKey] = msg.value;
     }
 
+    function getCredits(address insuree) external view returns(uint256){
+
+        return customerCredits[insuree];
+    }
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees ( address insuree)external payable
+    function creditInsurees ( address insuree, address airline, string  flight, uint256 timestamp)external 
     {
-        //mapping(address => uint256) private customerCredits;
-        customerCredits[insuree] = msg.value;
+        bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
+        uint256 amountToCredit = flightInsurance[_passengerflightKey].mul(15).div(10);
+        if(flightInsurance[_passengerflightKey] > 0){
+            
+            customerFlightCredits[_passengerflightKey] = amountToCredit;
+            customerCredits[insuree]= amountToCredit;
+        }
+
+        emit CreditInsured (insuree, airline, flight, timestamp, amountToCredit);
     }
     
 
@@ -225,9 +258,13 @@ contract FlightSuretyData {
     function pay(address insuree ) external payable 
     {
         //only data contract has money
-      insuree.transfer(msg.value);
+      
       uint256 creditBefore =  customerCredits[insuree] ;
+
+      require(creditBefore >= msg.value ,"Caller should have sufficient funds to withdraw");
+
       customerCredits[insuree] = creditBefore - msg.value;
+      insuree.transfer(msg.value);
     }
 
    /**

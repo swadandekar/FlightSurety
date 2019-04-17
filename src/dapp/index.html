@@ -24,8 +24,51 @@
         <div id="display-wrapper" class="top-20">
         </div>
         <div class="row top-20">
-            <label class="form">Flight</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
+            <label class="form">Airline</label> 
+            <input id="inp-airline-number">
+            <btn class="btn btn-primary" id="check-airline">Check Airline Status</btn>
         </div>
+        <div class="row top-20">
+            <label class="form">Airline</label> 
+            <select id="airline-number">
+                <option value="airCanada">Air Canada</option>
+                <option value="united">United</option>
+            </select>
+            <btn class="btn btn-primary" id="submit-airline">Register Airline</btn>
+            <btn class="btn btn-primary" id="fund-airline">Fund Airline</btn>
+        </div>
+        <div class="row top-20">
+            <label class="form">Flight</label> 
+            <select id="flight-numberRF">                
+                <option value="AC01">AC 01</option>
+                <option value="US02">US 02</option>
+            </select>    
+            <btn class="btn btn-primary" id="submit-flight">Register Flight</btn>
+        </div>
+        <div class="row top-20">
+            <label class="form">Flight</label> 
+            <select id="flight-number">                
+                <option value="AC01">AC 01</option>
+                <option value="US02">US 02</option>
+            </select>    
+            <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
+        </div>
+        <div class="row top-20">
+            <label class="form">Flight</label> 
+            <select id="flight_purchase">                
+                <option value="AC01">AC 01</option>
+                <option value="US02">US 02</option>
+            </select>           
+            <btn class="btn btn-primary" id="purchase-insurance">Purchase Flight Insurance</btn>
+        </div>
+        <div class="row top-20">        
+            <btn class="btn btn-primary" id="withdraw-credits">Withdraw Credits</btn>
+        </div>    
+        <div class="row top-20">        
+            <btn class="btn btn-primary" id="show-credits">Show Available Credits</btn>
+            <label class="form">Credits Available</label> 
+            <input id="availableCredits">
+        </div>        
     </main>
 
 </body>
