@@ -147,7 +147,7 @@ export default class Contract {
         self.flightSuretyApp.methods
            // .registerFlight(payload.airline, payload.flight, payload.timestamp, payload.StatusCode)
            .registerFlight(this.firstAirline, "US01", timestamp, 10)
-            .send({ from: self.owner}, (error, result) => {
+            .send({ from: self.owner, "gas": 4712388, "gasPrice": 100000000000}, (error, result) => {
                 callback(error, payload);
             });
     }
@@ -157,7 +157,7 @@ export default class Contract {
         let airlineAddress;
         let amount = 1; 
         amount = web3.toWei(amount.toString(), 'ether');
-        if(flightCode == "AC01")
+        if(flight == "AC01")
         {    
             airlineAddress = self.airlines[0];
         }
@@ -173,7 +173,7 @@ export default class Contract {
         } 
         self.flightSuretyApp.methods
             .buy(payload.insuree, payload.airline, payload.flight, payload.timestamp)
-            .send({ from: self.owner,value: amount, gasPrice: 0}, (error, result) => {
+            .send({ from: self.owner,value: amount, "gas": 4712388, "gasPrice": 100000000000}, (error, result) => {
                 callback(error, payload);
             });
     }
@@ -198,6 +198,33 @@ export default class Contract {
         self.flightSuretyApp.methods
             .getCredits(payload.insuree)
             .send({ from: self.owner}, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+
+    checkInsuredAmount(flight, callback) {
+        let self = this;
+        let airlineAddress;
+        let amount = 1; 
+        amount = web3.toWei(amount.toString(), 'ether');
+        if(flight == "AC01")
+        {    
+            airlineAddress = self.airlines[0];
+        }
+        else{
+            
+            airlineAddress = self.airlines[1];
+        }
+        let payload = {
+            insuree: self.passengers[0],
+            airline: airlineAddress,
+            flight: flight,
+            timestamp: 1549432800
+        } 
+        self.flightSuretyApp.methods
+            .getPassengerInsuredAmount(payload.insuree, payload.airline, payload.flight, payload.timestamp)
+            .send({ from: self.owner,"gas": 4712388, "gasPrice": 100000000000}, (error, result) => {
                 callback(error, payload);
             });
     }

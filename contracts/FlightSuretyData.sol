@@ -215,9 +215,10 @@ contract FlightSuretyData {
         flights[_flightKey].statusCode = statusCode;
     }
 
-    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external view returns (uint256){
+    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external  returns (uint256){
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
-        return flightInsurance[_passengerflightKey] ;
+        uint256 amount = flightInsurance[_passengerflightKey] ;
+        return amount;
     }
 
    /*
@@ -231,8 +232,8 @@ contract FlightSuretyData {
     }
 
     function getCredits(address insuree) external view returns(uint256){
-
-        return customerCredits[insuree];
+        uint256 credits =  customerCredits[insuree];
+        return credits;
     }
     /**
      *  @dev Credits payouts to insurees

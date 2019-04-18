@@ -143,7 +143,7 @@ getAccounts().then(accounts => {
           if(counter > 6) {
             counter =1;
           }
-          let statusCode = counter * 100 /10;
+          let statusCode = 20 //counter * 100 /10;
           counter = counter +1;
           console.log("counter " + counter);
           console.log("status code set " + statusCode );
@@ -166,8 +166,8 @@ getAccounts().then(accounts => {
                       ).send({
                           from: accounts[index]
                       }).then(result => {
-                          console.log(result);
-                          console.log(`Flight ${flight} got covered and insured the users`);
+                          console.log(result.returnValues);
+                          console.log(`Flight ${flight}  and Account ${accounts[index]} got covered and insured the users`);
                       }).catch(err => {
                           console.log(" Error at creditInsuree "+err.message);
                       });

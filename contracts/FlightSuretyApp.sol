@@ -170,7 +170,8 @@ contract FlightSuretyApp {
    
     }
 
-    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireNotMoreThanOneEther requireInsuranceNotBought(insuree, airline, flight, timestamp) external payable{
+//requireInsuranceNotBought(insuree, airline, flight, timestamp)
+    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireNotMoreThanOneEther  external payable{
        
         address(flightSuretyData).transfer(msg.value);
         flightSuretyData.buy(insuree, airline, flight, timestamp);
@@ -182,12 +183,19 @@ contract FlightSuretyApp {
     }
     
     function getCredits(address insuree) external view returns(uint256){
-
-        return flightSuretyData.getCredits(insuree);
+        uint256 credits =  flightSuretyData.getCredits(insuree);
+        return credits;
     }
 
     function creditInsurees( address insuree, address airline, string  flight, uint256 timestamp)external {
         flightSuretyData.creditInsurees(insuree, airline, flight, timestamp);
+    }
+
+    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external returns (uint256){
+       uint256 amount = flightSuretyData.getPassengerInsuredAmount(insuree, airline, flight, timestamp);
+
+       return amount;
+       
     }
 
     // Generate a request for oracles to fetch flight information
@@ -405,7 +413,7 @@ function pay(address insuree) external payable ;
 
 function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
 
-function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external view returns (uint256);
+function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external  returns (uint256);
 
 function getCredits(address insuree) external view returns(uint256);
 

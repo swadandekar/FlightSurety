@@ -79,7 +79,7 @@ import './flightsurety.css';
             // Write transaction
             contract.fundAirline(airlineCode, (error, result) => {
                 console.log("fund airline" +  result);
-                display('Airline', 'fund Airline', [ { label: 'fundAirline Airline Status ', error: error, value: result} ]);
+                display('Airline', 'fund Airline', [ { label: 'fundAirline Airline Status ', error: error, value: true} ]);
             });
         })
 
@@ -89,7 +89,8 @@ import './flightsurety.css';
             console.log(flight)
             // Write transaction
             contract.registerFlight(flight, (error, result) => {
-                display('Flight', 'Register Flight', [ { label: 'Register Flight Status ', error: error, value: result} ]);
+                console.log("register flight " + result);
+                display('Flight', 'Register Flight', [ { label: 'Register Flight Status ', error: error, value: result.airline + ' ' + result.flight} ]);
             });
         })
 
@@ -98,7 +99,7 @@ import './flightsurety.css';
             let flight = DOM.elid('flight_purchase').value;
             // Write transaction
             contract.purchaseFlightInsurance(flight, (error, result) => {
-                display('Flight', 'Purchase Flight Insurace', [ { label: 'Purchase Flight Insurance Status ', error: error, value: result} ]);
+                display('Flight', 'Purchase Flight Insurace', [ { label: 'Purchase Flight Insurance Status ', error: error, value: true} ]);
             });
         })
 
@@ -113,7 +114,9 @@ import './flightsurety.css';
         //show available credits
         DOM.elid('show-credits').addEventListener('click', () => {
             // Write transaction
-            contract.showCredits( (error, result) => {
+            let flight = DOM.elid('flight_purchase').value;
+            contract.checkInsuredAmount(flight,  (error, result) => {
+                console.log(  result);
                 display('Credits', 'Available Credits', [ { label: 'Available Credits ', error: error, value: result} ]);
             });
         })
