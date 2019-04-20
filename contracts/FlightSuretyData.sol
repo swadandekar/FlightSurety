@@ -257,16 +257,16 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay(address insuree ) external payable 
+    function pay(address insuree , uint256 amount) external payable 
     {
         //only data contract has money
       
       uint256 creditBefore =  customerCredits[insuree] ;
 
-      require(creditBefore >= msg.value ,"Caller should have sufficient funds to withdraw");
+      require(creditBefore >= amount ,"Caller should have sufficient funds to withdraw");
 
-      customerCredits[insuree] = creditBefore - msg.value;
-      insuree.transfer(msg.value);
+      customerCredits[insuree] = creditBefore - amount;
+      insuree.transfer(amount);
     }
 
    /**

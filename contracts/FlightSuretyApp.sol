@@ -179,7 +179,7 @@ contract FlightSuretyApp {
 
     function pay(address insuree) external payable{
          
-         flightSuretyData.pay(insuree);
+         flightSuretyData.pay(insuree, msg.value);
     }
     
     function getCredits(address insuree) external view returns(uint256){
@@ -413,7 +413,7 @@ function registerFlight (address airline, string flight, uint256 timestamp, uint
 
 function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount)external payable;
 
-function pay(address insuree) external payable ;
+function pay(address insuree , uint256 amount) external payable ;
 
 function processFlightStatus( address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
 

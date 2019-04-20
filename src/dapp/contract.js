@@ -178,14 +178,15 @@ export default class Contract {
             });
     }
 
-    withdrawCredits(callback) {
+    withdrawCredits(amount,callback) {
         let self = this;
+        amount = web3.toWei(amount.toString(), 'ether');
         let payload = {
             insuree: self.passengers[0]
-        }
+        } 
         self.flightSuretyApp.methods
             .pay(payload.insuree)
-            .send({ from: self.owner}, (error, result) => {
+            .send({ from: self.owner,value: amount, "gas": 4712388, "gasPrice": 100000000000}, (error, result) => {
                 callback(error, payload);
             });
     }

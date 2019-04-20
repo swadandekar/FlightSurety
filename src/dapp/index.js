@@ -106,7 +106,9 @@ import './flightsurety.css';
         //withdraw credits
         DOM.elid('withdraw-credits').addEventListener('click', () => {
             // Write transaction
-            contract.withdrawCredits( (error, result) => {
+            
+            let amount = DOM.elid('amountToWithdraw').value;
+            contract.withdrawCredits(amount, (error, result) => {
                 display('Flight', 'Widthdraw Credits', [ { label: 'Withdraw Credit Status ', error: error, value: result} ]);
             });
         }) 
