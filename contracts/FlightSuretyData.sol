@@ -15,7 +15,7 @@ contract FlightSuretyData {
     uint256 airlineCount;
     uint256 flightCount;
     
-
+    mapping(address => uint8) authorizedCaller;
     mapping(bytes32 => Flight) private flights;
     mapping(address => Airline) private airlines;
    // FlightInsurance[] private flightInsurance;    
@@ -49,6 +49,10 @@ contract FlightSuretyData {
     event AirlineRegistered (address airlineAddress, bool isRegistered, bool isFunded, string airlineCode );
  
     event FlightRegistered (address airline, string flightCode, uint256 timestamp );
+
+    event AuthorizedCaller(address caller);
+
+    event DeAuthorizedCaller(address caller);
 
     /**
     * @dev Constructor
@@ -99,6 +103,12 @@ contract FlightSuretyData {
         _;
     }
 
+    modifier requireIsCallerAuthorized()
+    {
+        require(authorizedCaller[msg.sender] == 1, "Caller is not authorized");
+        _;
+    }
+
     modifier verifyOtherAirlinesApproval (uint256 validVotesCount) {
         require( airlineCount < 4 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50, "At least 50% airlines should vote to register new airline");    
         _;
@@ -135,6 +145,22 @@ contract FlightSuretyData {
         operational = mode;
     }
 
+    /* authorize caller */
+    function authorizeCaller(address _caller) public returns(bool)
+    {
+        authorizedCaller[_caller] = 1;
+        emit AuthorizedCaller(_caller);
+        return true;
+    }
+
+    /* deauthorize caller */
+    function deAuthorizeCaller(address _caller) public returns(bool)
+    {
+        delete authorizedCaller[_caller];
+        //authorizedCaller[_caller] = 0;
+        emit DeAuthorizedCaller(_caller);
+        return true;
+    }
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
