@@ -103,12 +103,10 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function isOperational() 
-                            public 
-                            pure 
-                            returns(bool) 
+    function isOperational() external view returns(bool) 
     {
-        return true;  // Modify to call data contract's status
+       // return true;  // Modify to call data contract's status
+       return flightSuretyData.isOperational();
     }
 
     /********************************************************************************************/
@@ -120,7 +118,7 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline (address _airlineAddress, string  _airlineCode, uint256 validVotesCount)  requireAirlineFunded 
+    function registerAirline (address _airlineAddress, string  _airlineCode, uint256 validVotesCount)  requireAirlineFunded requireIsOperational
                             external payable 
                             returns(bool)
                             
@@ -129,7 +127,7 @@ contract FlightSuretyApp {
         return (true);
     }
 
-    function fundAirline(address _airlineAddress) require10Ether external payable returns (bool){
+    function fundAirline(address _airlineAddress) require10Ether requireIsOperational external payable returns (bool){
 
         address(flightSuretyData).transfer(msg.value);
         flightSuretyData.fundAirline(_airlineAddress);
@@ -137,7 +135,7 @@ contract FlightSuretyApp {
     }
 
 
-    function isAirline(address _airlineAddress) external  returns(bool){
+    function isAirline(address _airlineAddress) requireIsOperational external  returns(bool){
         bool airlineStatus = flightSuretyData.isAirline(_airlineAddress);
         return airlineStatus;
     }
@@ -153,7 +151,7 @@ contract FlightSuretyApp {
                                     string   flight,
                                     uint256 timestamp,
                                     uint8 statusCode
-                                )
+                                ) requireIsOperational 
                                 external                                
     {
         flightSuretyData.registerFlight(airline, flight, timestamp, statusCode );
@@ -163,7 +161,7 @@ contract FlightSuretyApp {
     * @dev Called after oracle has updated flight status
     *
     */  
-    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) external
+    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) requireIsOperational external
     {
         
         flightSuretyData.processFlightStatus(airline,flight,timestamp, statusCode);
@@ -171,33 +169,33 @@ contract FlightSuretyApp {
     }
 
 
-    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireInsuranceNotBought(insuree, airline, flight, timestamp) requireNotMoreThanOneEther  external payable{
+    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireIsOperational requireInsuranceNotBought(insuree, airline, flight, timestamp) requireNotMoreThanOneEther  external payable{
        
         address(flightSuretyData).transfer(msg.value);
         flightSuretyData.buy(insuree, airline, flight, timestamp, msg.value);
     }
 
-    function pay(address insuree) external payable{
+    function pay(address insuree) requireIsOperational external payable{
          
          flightSuretyData.pay(insuree, msg.value);
     }
     
-    function getCredits(address insuree) external view returns(uint256){
+    function getCredits(address insuree) requireIsOperational external view returns(uint256){
         uint256 credits =  flightSuretyData.getCredits(insuree);
         return credits;
     }
 
-    function creditInsurees( address insuree, address airline, string  flight, uint256 timestamp)external {
+    function creditInsurees( address insuree, address airline, string  flight, uint256 timestamp) requireIsOperational external {
         flightSuretyData.creditInsurees(insuree, airline, flight, timestamp);
     }
 
-    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external returns (uint256){
+    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) requireIsOperational external returns (uint256){
        uint256 amount = flightSuretyData.getPassengerInsuredAmount(insuree, airline, flight, timestamp);
        return  amount;
        
     }
 
-    function getAmount() external  returns(uint256){
+    function getAmount() requireIsOperational external  returns(uint256){
         
         return 10;
     }
@@ -208,7 +206,7 @@ contract FlightSuretyApp {
                             address airline,
                             string  flight,
                             uint256 timestamp                            
-                        )
+                        ) requireIsOperational
                         external
     {
         uint8 index = getRandomIndex(msg.sender);
@@ -398,6 +396,8 @@ contract FlightSuretyApp {
 }   
 
 contract FlightSuretyData{
+
+function isOperational() external view returns(bool) ;
 
 function registerAirline(address _airlineAddress, string _airlineCode,uint256 validVotesCount) 
                             external  payable                 
