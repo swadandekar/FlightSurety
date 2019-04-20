@@ -170,11 +170,11 @@ contract FlightSuretyApp {
    
     }
 
-//requireInsuranceNotBought(insuree, airline, flight, timestamp)
-    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireNotMoreThanOneEther  external payable{
+//requireInsuranceNotBought(insuree, airline, flight, timestamp) //requireNotMoreThanOneEther
+    function buy(address insuree , address airline, string  flight, uint256 timestamp)   external payable{
        
         address(flightSuretyData).transfer(msg.value);
-        flightSuretyData.buy(insuree, airline, flight, timestamp);
+        flightSuretyData.buy(insuree, airline, flight, timestamp, msg.value);
     }
 
     function pay(address insuree) external payable{
@@ -193,9 +193,13 @@ contract FlightSuretyApp {
 
     function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external returns (uint256){
        uint256 amount = flightSuretyData.getPassengerInsuredAmount(insuree, airline, flight, timestamp);
-
-       return amount;
+       return  amount;
        
+    }
+
+    function getAmount() external  returns(uint256){
+        
+        return 10;
     }
 
     // Generate a request for oracles to fetch flight information
@@ -407,7 +411,7 @@ function getAirlineCount() external returns (uint256);
 
 function registerFlight (address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
 
-function buy(address insuree , address airline, string  flight, uint256 timestamp)external payable;
+function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount)external payable;
 
 function pay(address insuree) external payable ;
 

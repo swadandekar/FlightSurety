@@ -225,10 +225,10 @@ contract FlightSuretyData {
     * @dev Buy insurance for a flight
     *
     */   
-    function buy(address insuree , address airline, string  flight, uint256 timestamp)external payable
+    function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount)external payable
     {
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
-        flightInsurance[_passengerflightKey] = msg.value;
+        flightInsurance[_passengerflightKey] =  amount;
     }
 
     function getCredits(address insuree) external view returns(uint256){
@@ -241,7 +241,8 @@ contract FlightSuretyData {
     function creditInsurees ( address insuree, address airline, string  flight, uint256 timestamp)external 
     {
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
-        uint256 amountToCredit = flightInsurance[_passengerflightKey].mul(15).div(10);
+        uint256 amountToCredit = flightInsurance[_passengerflightKey];
+        amountToCredit= amountToCredit.mul(15).div(10);
         if(flightInsurance[_passengerflightKey] > 0){
             
             customerFlightCredits[_passengerflightKey] = amountToCredit;

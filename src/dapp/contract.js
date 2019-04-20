@@ -203,6 +203,18 @@ export default class Contract {
     }
 
 
+    getCredits(callback) {
+        let self = this;
+        let payload = {
+            insuree: self.passengers[0]
+        } 
+
+        self.flightSuretyApp.methods
+        .getCredits(payload.insuree)
+        .call({ from: self.owner}, callback);
+    } 
+
+
     checkInsuredAmount(flight, callback) {
         let self = this;
         let airlineAddress;
@@ -222,10 +234,15 @@ export default class Contract {
             flight: flight,
             timestamp: 1549432800
         } 
+
+        // self.flightSuretyApp.methods
+        // .getAmount()
+        // .call({ from: self.owner}, callback);
+
+        
+
         self.flightSuretyApp.methods
-            .getPassengerInsuredAmount(payload.insuree, payload.airline, payload.flight, payload.timestamp)
-            .send({ from: self.owner,"gas": 4712388, "gasPrice": 100000000000}, (error, result) => {
-                callback(error, payload);
-            });
+        .getPassengerInsuredAmount(payload.insuree, payload.airline, payload.flight, payload.timestamp)
+        .call({ from: self.owner}, callback);
     }
 }

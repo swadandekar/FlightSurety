@@ -167,7 +167,7 @@ getAccounts().then(accounts => {
                           from: accounts[index]
                       }).then(result => {
                           console.log(result.returnValues);
-                          console.log(`Flight ${flight}  and Account ${accounts[index]} got covered and insured the users`);
+                          console.log(`Flight ${flight}  and Account ${accounts[index]} with airline ${airline} timestamp ${timestamp} got covered and insured the users`);
                       }).catch(err => {
                           console.log(" Error at creditInsuree "+err.message);
                       });

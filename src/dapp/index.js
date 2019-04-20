@@ -112,15 +112,25 @@ import './flightsurety.css';
         }) 
 
         //show available credits
-        DOM.elid('show-credits').addEventListener('click', () => {
+        DOM.elid('show-insured-amount').addEventListener('click', () => {
             // Write transaction
             let flight = DOM.elid('flight_purchase').value;
             contract.checkInsuredAmount(flight,  (error, result) => {
+                console.log("we are in debug");
                 console.log(  result);
-                display('Credits', 'Available Credits', [ { label: 'Available Credits ', error: error, value: result} ]);
+                display('Insured Amount', 'Insured Amount', [ { label: 'Insured Amounts ', error: error, value: result} ]);
             });
         })
         
+        //show available credits
+        DOM.elid('show-credits').addEventListener('click', () => {
+            // Write transaction
+            contract.getCredits(  (error, result) => {
+                console.log("we are in debug");
+                console.log( result);
+                display('Available Credits', 'Available Credits', [ { label: 'Available Credits ', error: error, value: result} ]);
+            });
+        })
         
     
     });
