@@ -170,8 +170,8 @@ contract FlightSuretyApp {
    
     }
 
-//requireInsuranceNotBought(insuree, airline, flight, timestamp) //requireNotMoreThanOneEther
-    function buy(address insuree , address airline, string  flight, uint256 timestamp)   external payable{
+
+    function buy(address insuree , address airline, string  flight, uint256 timestamp) requireInsuranceNotBought(insuree, airline, flight, timestamp) requireNotMoreThanOneEther  external payable{
        
         address(flightSuretyData).transfer(msg.value);
         flightSuretyData.buy(insuree, airline, flight, timestamp, msg.value);

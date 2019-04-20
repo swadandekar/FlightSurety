@@ -265,8 +265,8 @@ contract FlightSuretyData {
 
       require(creditBefore >= amount ,"Caller should have sufficient funds to withdraw");
 
-      customerCredits[insuree] = creditBefore - amount;
-      insuree.transfer(amount);
+      customerCredits[insuree] = creditBefore.sub(amount);
+      //insuree.transfer(amount);
     }
 
    /**
