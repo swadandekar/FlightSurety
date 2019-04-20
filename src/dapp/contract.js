@@ -1,5 +1,5 @@
 import FlightSuretyApp from '../../build/contracts/FlightSuretyApp.json';
-//import FlightSuretyData from '../../build/contracts/FlightSuretyData.json';
+import FlightSuretyData from '../../build/contracts/FlightSuretyData.json';
 import Config from './config.json';
 import Web3 from 'web3';
 
@@ -8,10 +8,11 @@ export default class Contract {
 
         let config = Config[network];
         this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
-       // this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
+        this.flightSuretyData = new this.web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
         this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
         this.initialize(callback);
         this.owner = null;
+        this.x = config.appAddress;
         this.airlines = [];
         this.passengers = [];
         this.firstAirline = null;
@@ -19,11 +20,15 @@ export default class Contract {
     }
 
     initialize(callback) {
-        this.web3.eth.getAccounts((error, accts) => {
+        this.web3.eth.getAccounts(async (error, accts) => {
            console.log(accts);
             this.owner = accts[0];
             this.firstAirline = accts[1];
             let counter = 2;
+            
+            await this.flightSuretyData.methods.authorizeCaller(this.x).send({
+                "from": this.owner
+            });
             
             while(this.airlines.length < 5) {
                 this.airlines.push(accts[counter++]);
@@ -46,6 +51,14 @@ export default class Contract {
             .isOperational()
             .call({ from: self.owner}, callback);
     }
+
+    checkIfCallerAuthorized(callback) {
+        let self = this;
+        console.log("I am the caller "+ self.owner );
+        self.flightSuretyApp.methods
+             .checkIfCallerAuthorized()
+             .call({ from: self.owner}, callback);
+     }    
 
     isAirline(airline, callback) {
         let self = this;

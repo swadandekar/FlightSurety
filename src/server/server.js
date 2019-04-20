@@ -143,7 +143,8 @@ getAccounts().then(accounts => {
           if(counter > 6) {
             counter =1;
           }
-          let statusCode = 20 //counter * 100 /10;
+          let statusCode = 20 //added this for testing. For real time scenario please comment thi
+          // let statusCode = counter * 100 /10; // and uncomment this
           counter = counter +1;
           console.log("counter " + counter);
           console.log("status code set " + statusCode );

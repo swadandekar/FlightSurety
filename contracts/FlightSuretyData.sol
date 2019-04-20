@@ -161,6 +161,14 @@ contract FlightSuretyData {
         emit DeAuthorizedCaller(_caller);
         return true;
     }
+
+    function checkIfCallerAuthorized() external returns(bool)
+    {
+        if(authorizedCaller[msg.sender] == 1)
+        return true ;
+        else
+        return false;
+    }
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -170,7 +178,7 @@ contract FlightSuretyData {
     *      Can only be called from FlightSuretyApp contract
     *
     */   
-    function registerAirline (address airlineAddress, string airlineCode,  uint256 validVotesCount) verifyOtherAirlinesApproval(validVotesCount)
+    function registerAirline (address airlineAddress, string airlineCode,  uint256 validVotesCount) requireIsCallerAuthorized verifyOtherAirlinesApproval(validVotesCount)
                             external returns (bool)
     {
         
@@ -186,30 +194,30 @@ contract FlightSuretyData {
         return true;
     }
 
-    function fundAirline( address _airlineAddress) payable external returns (bool){
+    function fundAirline( address _airlineAddress) requireIsCallerAuthorized payable external returns (bool){
         if(airlines[_airlineAddress].isRegistered== true){
             airlines[_airlineAddress].isFunded = true;
         }
          return true;
     }
 
-    function isAirline(address _airlineAddress) external view returns(bool){
+    function isAirline(address _airlineAddress) requireIsCallerAuthorized external view returns(bool){
 
         bool fundStatus = airlines[_airlineAddress].isFunded ;
         return fundStatus;
     }
 
-    function getAirlineCount() external view returns (uint256){
+    function getAirlineCount() requireIsCallerAuthorized external view returns (uint256){
         return airlineCount;
     }
 
-    function checkAirlinesApproval(uint256 validVotesCount ) external view returns (bool) {       
+    function checkAirlinesApproval(uint256 validVotesCount ) requireIsCallerAuthorized external view returns (bool) {       
 
         bool flag = airlineCount < 4 || SafeMath.div(SafeMath.mul(validVotesCount, 100), airlineCount) >= 50 ; 
         return flag;
     }
 
-    function registerFlight( address airline, string  flight, uint256 timestamp, uint8 statusCode) external                                
+    function registerFlight( address airline, string  flight, uint256 timestamp, uint8 statusCode) requireIsCallerAuthorized external                                
     {
         bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
 
@@ -225,20 +233,21 @@ contract FlightSuretyData {
         emit FlightRegistered (flights[_flightKey].airline, flights[_flightKey].flightCode, flights[_flightKey].updatedTimestamp );
     }
     
-    function isFlight(address _airlineAddress, string flight , uint256 timestamp) external view returns(bool){
+    function isFlight(address _airlineAddress, string flight , uint256 timestamp) requireIsCallerAuthorized external view returns(bool){
 
         bytes32  _flightKey = getFlightKey( _airlineAddress, flight, timestamp );
         return flights[_flightKey].isRegistered;
     }
 
-    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) external
+    function processFlightStatus( address airline, string  flight, uint256 timestamp, uint8 statusCode ) requireIsCallerAuthorized external
     {
         bytes32  _flightKey = getFlightKey( airline, flight, timestamp );
        
         flights[_flightKey].statusCode = statusCode;
     }
 
-    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) external  returns (uint256){
+    function getPassengerInsuredAmount(address insuree , address airline, string  flight, uint256 timestamp) requireIsCallerAuthorized external  returns(uint256)
+    {
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
         uint256 amount = flightInsurance[_passengerflightKey] ;
         return amount;
@@ -248,20 +257,20 @@ contract FlightSuretyData {
     * @dev Buy insurance for a flight
     *
     */   
-    function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount)external payable
+    function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount) requireIsCallerAuthorized external payable
     {
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
         flightInsurance[_passengerflightKey] =  amount;
     }
 
-    function getCredits(address insuree) external view returns(uint256){
+    function getCredits(address insuree) requireIsCallerAuthorized external view returns(uint256){
         uint256 credits =  customerCredits[insuree];
         return credits;
     }
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees ( address insuree, address airline, string  flight, uint256 timestamp)external 
+    function creditInsurees ( address insuree, address airline, string  flight, uint256 timestamp) requireIsCallerAuthorized external 
     {
         bytes32  _passengerflightKey =  keccak256(abi.encodePacked(insuree, airline, flight, timestamp));
         uint256 amountToCredit = flightInsurance[_passengerflightKey];
@@ -280,7 +289,7 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay(address insuree , uint256 amount) external payable 
+    function pay(address insuree , uint256 amount) requireIsCallerAuthorized external payable 
     {
         //only data contract has money
       
@@ -310,8 +319,8 @@ contract FlightSuretyData {
                             address airline,
                             string memory flight,
                             uint256 timestamp
-                        )
-                        pure
+                        ) requireIsCallerAuthorized
+                        view 
                         internal
                         returns(bytes32) 
     {

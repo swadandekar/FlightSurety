@@ -109,6 +109,11 @@ contract FlightSuretyApp {
        return flightSuretyData.isOperational();
     }
 
+    function checkIfCallerAuthorized() external returns(bool)
+    {
+       return flightSuretyData.checkIfCallerAuthorized();
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -157,6 +162,12 @@ contract FlightSuretyApp {
         flightSuretyData.registerFlight(airline, flight, timestamp, statusCode );
     }
     
+    function isFlight(address _airlineAddress, string flight , uint256 timestamp)  external view returns(bool)
+    {
+
+       return flightSuretyData.isFlight( _airlineAddress, flight, timestamp );
+        
+    }
    /**
     * @dev Called after oracle has updated flight status
     *
@@ -193,11 +204,6 @@ contract FlightSuretyApp {
        uint256 amount = flightSuretyData.getPassengerInsuredAmount(insuree, airline, flight, timestamp);
        return  amount;
        
-    }
-
-    function getAmount() requireIsOperational external  returns(uint256){
-        
-        return 10;
     }
 
     // Generate a request for oracles to fetch flight information
@@ -399,6 +405,8 @@ contract FlightSuretyData{
 
 function isOperational() external view returns(bool) ;
 
+function checkIfCallerAuthorized() external returns(bool);
+
 function registerAirline(address _airlineAddress, string _airlineCode,uint256 validVotesCount) 
                             external  payable                 
                             returns(bool);
@@ -410,6 +418,8 @@ function fundAirline(address _airlineAddress) external payable returns (bool);
 function getAirlineCount() external returns (uint256);
 
 function registerFlight (address airline, string flight, uint256 timestamp, uint8 statusCode ) external;
+
+function isFlight(address _airlineAddress, string flight , uint256 timestamp)  external view returns(bool);
 
 function buy(address insuree , address airline, string  flight, uint256 timestamp, uint256 amount)external payable;
 

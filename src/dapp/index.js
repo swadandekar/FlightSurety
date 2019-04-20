@@ -19,6 +19,14 @@ import './flightsurety.css';
             display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
         });
 
+        contract.checkIfCallerAuthorized((error, result) => {
+            console.log(result);
+            console.log(error);
+            console.log(error,result);
+            display('Authorization Status', 'Check if contract is authorized', [ { label: 'Authorization Status', error: error, value: result} ]);
+        });
+    
+
         // contract.flightSuretyApp.events.FlightStatusInfo({
         //     fromBlock: "latest"
         // }, function (error, result) {
@@ -109,7 +117,7 @@ import './flightsurety.css';
             
             let amount = DOM.elid('amountToWithdraw').value;
             contract.withdrawCredits(amount, (error, result) => {
-                display('Flight', 'Widthdraw Credits', [ { label: 'Withdraw Credit Status ', error: error, value: result} ]);
+                display('Flight', 'Widthdraw Credits', [ { label: 'Withdraw Credit Status ', error: error, value: true} ]);
             });
         }) 
 

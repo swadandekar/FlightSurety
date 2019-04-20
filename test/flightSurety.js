@@ -89,7 +89,7 @@ contract('Flight Surety Tests', async (accounts) => {
        
 
     
-     let result = await config.flightSuretyData.isAirline.call(newAirline); 
+     let result = await config.flightSuretyApp.isAirline.call(newAirline); 
 
     // ASSERT
     assert.equal(result, true, "Airline should be able to register another airline if it has provided funding");
@@ -112,7 +112,7 @@ contract('Flight Surety Tests', async (accounts) => {
     catch(e) {
 
     }
-    let result = await config.flightSuretyData.isAirline.call(thirdAirline); 
+    let result = await config.flightSuretyApp.isAirline.call(thirdAirline); 
 
     // let cnt = await config.flightSuretyData.getAirlineCount.call(); 
     // console.log("airline count "+ cnt);
@@ -132,8 +132,8 @@ contract('Flight Surety Tests', async (accounts) => {
     let amount = 10; 
     amount = web3.utils.toWei(amount.toString(), 'ether');
     
-    let cnt = await config.flightSuretyData.getAirlineCount.call(); 
-    console.log("airline count 7 before  "+ cnt);
+    // let cnt = await config.flightSuretyApp.getAirlineCount.call(); 
+    // console.log("airline count 7 before  "+ cnt);
 
     // // ACT
     try {
@@ -151,13 +151,13 @@ contract('Flight Surety Tests', async (accounts) => {
     }
 
 
-    let result = await config.flightSuretyData.isAirline.call(fifthAirline); 
+    let result = await config.flightSuretyApp.isAirline.call(fifthAirline); 
 
-    let cnt2 = await config.flightSuretyData.getAirlineCount.call(); 
-    console.log("airline count 7 after "+ cnt2);
+    // let cnt2 = await config.flightSuretyApp.getAirlineCount.call(); 
+    // console.log("airline count 7 after "+ cnt2);
 
-    let resultApproval = await config.flightSuretyData.checkAirlinesApproval.call(1);
-    console.log("check approval result: " + resultApproval);
+    // let resultApproval = await config.flightSuretyApp.checkAirlinesApproval.call(1);
+    // console.log("check approval result: " + resultApproval);
 
     // ASSERT
     assert.equal(result, false, "Airline should not be able to register when do not have enough votes");
@@ -183,7 +183,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     }
     
-    let result = await config.flightSuretyData.isAirline.call(sixAirline); 
+    let result = await config.flightSuretyApp.isAirline.call(sixAirline); 
 
     // ASSERT
     assert.equal(result, true, "Airline should be able to registered when has enough votes");
@@ -209,7 +209,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     }
     
-    let result = await config.flightSuretyData.isFlight.call(airline,"US01",timestamp); 
+    let result = await config.flightSuretyApp.isFlight.call(airline,"US01",timestamp); 
 
     // ASSERT
     assert.equal(result, true, "Floght should be able to registered");
