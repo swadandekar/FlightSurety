@@ -1,10 +1,12 @@
 # FlightSurety
 
-FlightSurety is a sample application project for Udacity's Blockchain course.
+This is a web application which allows users to buy Flight Insurance. If flight is delayed due to airline fault, passenger gets credit of 1.5X the amount they paid. It has simulation generated to send the flight status.
+
+Skills: Solidity, Node.js, Webpack, Web3.js, RestAPI, Ganache, Infura
 
 ## Install
 
-This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle), dApp scaffolding (using HTML, CSS and JS) and server app scaffolding.
+This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle), dApp  (using HTML, CSS and JS) and server app .
 
 To install, download or clone the repo, then:
 
